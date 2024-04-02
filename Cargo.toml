@@ -10,6 +10,7 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [dependencies]
+burn = { version = "0.12.1", features = ["train", "wgpu"] }
 
 [lints.rust]
 future_incompatible = "warn"
