@@ -4,10 +4,12 @@ use burn::{
     module::Module,
     nn::{
         conv::{Conv2d, Conv2dConfig},
+        loss::CrossEntropyLoss,
         pool::{AdaptiveAvgPool2d, AdaptiveAvgPool2dConfig},
         Dropout, DropoutConfig, Linear, LinearConfig, GELU,
     },
-    tensor::{backend::Backend, Tensor},
+    tensor::{backend::Backend, Int, Tensor},
+    train::ClassificationOutput,
 };
 
 #[derive(Module, Debug)]
@@ -62,5 +64,17 @@ impl<B: Backend> Model<B> {
         let x = self.dropout.forward(x);
         let x = self.activation.forward(x);
         self.linear2.forward(x) // (batch size) * (# of classes)
+    }
+
+    pub fn forward_classification(
+        &self,
+        images: Tensor<B, 3>,
+        targets: Tensor<B, 1, Int>,
+    ) -> ClassificationOutput<B> {
+        let output = self.forward(images);
+        let loss =
+            CrossEntropyLoss::new(None, &output.device()).forward(output.clone(), targets.clone());
+
+        ClassificationOutput::new(loss, output, targets)
     }
 }
