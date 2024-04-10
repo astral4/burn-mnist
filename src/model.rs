@@ -1,4 +1,4 @@
-use crate::{IMAGE_HEIGHT, IMAGE_WIDTH};
+use crate::{data::MnistBatch, IMAGE_HEIGHT, IMAGE_WIDTH};
 use burn::{
     config::Config,
     module::Module,
@@ -8,8 +8,11 @@ use burn::{
         pool::{AdaptiveAvgPool2d, AdaptiveAvgPool2dConfig},
         Dropout, DropoutConfig, Linear, LinearConfig, GELU,
     },
-    tensor::{backend::Backend, Int, Tensor},
-    train::ClassificationOutput,
+    tensor::{
+        backend::{AutodiffBackend, Backend},
+        Int, Tensor,
+    },
+    train::{ClassificationOutput, TrainOutput, TrainStep, ValidStep},
 };
 
 #[derive(Module, Debug)]
@@ -76,5 +79,19 @@ impl<B: Backend> Model<B> {
             CrossEntropyLoss::new(None, &output.device()).forward(output.clone(), labels.clone());
 
         ClassificationOutput::new(loss, output, labels)
+    }
+}
+
+impl<B: AutodiffBackend> TrainStep<MnistBatch<B>, ClassificationOutput<B>> for Model<B> {
+    fn step(&self, batch: MnistBatch<B>) -> TrainOutput<ClassificationOutput<B>> {
+        let item = self.forward_classification(batch.images, batch.labels);
+
+        TrainOutput::new(self, item.loss.backward(), item)
+    }
+}
+
+impl<B: Backend> ValidStep<MnistBatch<B>, ClassificationOutput<B>> for Model<B> {
+    fn step(&self, batch: MnistBatch<B>) -> ClassificationOutput<B> {
+        self.forward_classification(batch.images, batch.labels)
     }
 }
