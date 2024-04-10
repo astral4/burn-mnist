@@ -38,5 +38,16 @@ fn main() -> Result<()> {
     )
     .context("Failed to train model")?;
 
+    /*
+    // Here's an example of using a trained model for inference.
+
+    use burn::data::dataloader::Dataset;
+    use burn_mnist::infer::infer;
+
+    let item = test_dataset.get(42).unwrap();
+    let prediction = infer::<_, Backend>("./model", device, item.clone())?;
+    println!("Prediction: {prediction}; Actual: {}", item.label);
+    */
+
     Ok(())
 }

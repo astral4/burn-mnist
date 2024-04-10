@@ -1,6 +1,7 @@
 use crate::{
     data::{MnistBatcher, MnistDataset},
     model::ModelConfig,
+    Recorder,
 };
 use anyhow::{Context, Result};
 use burn::{
@@ -8,7 +9,6 @@ use burn::{
     data::dataloader::DataLoaderBuilder,
     module::Module,
     optim::AdamWConfig,
-    record::{HalfPrecisionSettings, NamedMpkGzFileRecorder},
     tensor::backend::AutodiffBackend,
     train::{
         metric::{AccuracyMetric, LossMetric},
@@ -20,8 +20,6 @@ use std::{
     fs::create_dir_all,
     path::Path,
 };
-
-type Recorder = NamedMpkGzFileRecorder<HalfPrecisionSettings>;
 
 #[derive(Config)]
 pub struct TrainingConfig {
