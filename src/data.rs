@@ -1,4 +1,5 @@
 use anyhow::Result;
+use burn::data::dataloader::batcher::Batcher;
 use burn::data::dataset::Dataset;
 use burn::tensor::backend::Backend;
 use burn::tensor::{Data, ElementConversion, Int, Shape, Tensor};
@@ -87,4 +88,33 @@ impl<B: Backend> Dataset<MnistItem<B>> for MnistDataset<B> {
 pub struct MnistItem<B: Backend> {
     image: Tensor<B, 3>,
     label: Tensor<B, 1, Int>,
+}
+
+#[derive(Debug)]
+pub struct MnistBatcher<B: Backend> {
+    device: B::Device,
+}
+
+impl<B: Backend> MnistBatcher<B> {
+    pub fn new(device: B::Device) -> Self {
+        Self { device }
+    }
+}
+
+impl<B: Backend> Batcher<MnistItem<B>, MnistBatch<B>> for MnistBatcher<B> {
+    fn batch(&self, items: Vec<MnistItem<B>>) -> MnistBatch<B> {
+        let images = items.iter().map(|item| item.image.clone()).collect();
+        let labels = items.iter().map(|item| item.label.clone()).collect();
+
+        MnistBatch {
+            images: Tensor::cat(images, 0),
+            labels: Tensor::cat(labels, 0),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct MnistBatch<B: Backend> {
+    images: Tensor<B, 3>,
+    labels: Tensor<B, 1, Int>,
 }
