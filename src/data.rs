@@ -1,5 +1,5 @@
 use crate::{IMAGE_HEIGHT, IMAGE_WIDTH};
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
     tensor::{backend::Backend, Data, ElementConversion, Int, Shape, Tensor},
@@ -12,7 +12,14 @@ pub struct MnistDataset {
 }
 
 impl MnistDataset {
-    fn from_idx_files<P1: AsRef<Path>, P2: AsRef<Path>>(
+    #[allow(clippy::missing_panics_doc)]
+    /// # Errors
+    ///
+    /// This function returns an error if:
+    /// - The file of images in the dataset cannot be read
+    /// - The file of labels in the dataset cannot be read
+    /// - The number of images and labels is not equal
+    pub fn from_idx_files<P1: AsRef<Path>, P2: AsRef<Path>>(
         images_path: P1,
         labels_path: P2,
     ) -> Result<Self> {
@@ -28,10 +35,11 @@ impl MnistDataset {
             u32::from_be_bytes(bytes)
         };
 
-        assert_eq!(
-            num_images, num_labels,
-            "Every image must have exactly one corresponding label"
-        );
+        if num_images != num_labels {
+            return Err(anyhow!(
+                "Every image must have exactly one corresponding label"
+            ));
+        }
 
         let mut dataset = Vec::with_capacity(num_images as usize);
 
