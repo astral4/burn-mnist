@@ -35,7 +35,7 @@ pub struct ModelConfig {
 }
 
 impl ModelConfig {
-    /// Returns the initialized model.
+    // returns the initialized model
     pub fn init<B: Backend>(&self, device: &B::Device) -> Model<B> {
         Model {
             conv1: Conv2dConfig::new([1, 8], [3, 3]).init(device),
@@ -44,6 +44,20 @@ impl ModelConfig {
             activation: GELU::new(),
             linear1: LinearConfig::new(16 * 8 * 8, self.hidden_size).init(device),
             linear2: LinearConfig::new(self.hidden_size, self.num_classes).init(device),
+            dropout: DropoutConfig::new(self.dropout).init(),
+        }
+    }
+
+    // returns the initialized model using the recorded weights
+    pub fn init_with<B: Backend>(&self, record: ModelRecord<B>) -> Model<B> {
+        Model {
+            conv1: Conv2dConfig::new([1, 8], [3, 3]).init_with(record.conv1),
+            conv2: Conv2dConfig::new([8, 16], [3, 3]).init_with(record.conv2),
+            pool: AdaptiveAvgPool2dConfig::new([8, 8]).init(),
+            activation: GELU::new(),
+            linear1: LinearConfig::new(16 * 8 * 8, self.hidden_size).init_with(record.linear1),
+            linear2: LinearConfig::new(self.hidden_size, self.num_classes)
+                .init_with(record.linear2),
             dropout: DropoutConfig::new(self.dropout).init(),
         }
     }
