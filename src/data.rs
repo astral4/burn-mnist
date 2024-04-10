@@ -25,13 +25,13 @@ impl MnistDataset {
     ) -> Result<Self> {
         let images_buf = read(images_path).context("Failed to read image dataset")?;
         let num_images = {
-            let bytes: [u8; 4] = images_buf[4..7].try_into().unwrap();
+            let bytes: [u8; 4] = images_buf[4..8].try_into().unwrap();
             u32::from_be_bytes(bytes)
         };
 
         let mut labels_buf = read(labels_path).context("Failed to read label dataset")?;
         let num_labels = {
-            let bytes: [u8; 4] = labels_buf[4..7].try_into().unwrap();
+            let bytes: [u8; 4] = labels_buf[4..8].try_into().unwrap();
             u32::from_be_bytes(bytes)
         };
 
