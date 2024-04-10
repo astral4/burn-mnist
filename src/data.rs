@@ -85,32 +85,22 @@ impl<B: Backend> MnistBatcher<B> {
 
 impl<B: Backend> Batcher<MnistItem, MnistBatch<B>> for MnistBatcher<B> {
     fn batch(&self, items: Vec<MnistItem>) -> MnistBatch<B> {
-        let mut images = Vec::with_capacity(items.len());
-        let mut labels = Vec::with_capacity(items.len());
+        let labels = items
+            .iter()
+            .map(|item| item.label)
+            .map(|label| Tensor::from_ints([label.elem()], &self.device))
+            .collect();
 
-        for item in items {
-            // convert image to tensor
-            let image_data = Data {
-                value: item
-                    .image
-                    .into_iter()
-                    .map(ElementConversion::elem)
-                    .collect(),
-                shape: Shape {
-                    dims: [1, IMAGE_WIDTH, IMAGE_HEIGHT],
-                },
-            };
-            let image_tensor = Tensor::from_data(image_data, &self.device);
-            images.push(image_tensor);
-
-            // convert label to tensor
-            let label_data = Data {
-                value: vec![item.label.elem()],
-                shape: Shape { dims: [1] },
-            };
-            let label_tensor = Tensor::from_data(label_data, &self.device);
-            labels.push(label_tensor);
-        }
+        let images = items
+            .into_iter()
+            .map(|item| item.image)
+            .map(|image| {
+                Tensor::from_data(
+                    Data::new(image, Shape::new([1, IMAGE_WIDTH, IMAGE_HEIGHT])).convert(),
+                    &self.device,
+                )
+            })
+            .collect();
 
         MnistBatch {
             images: Tensor::cat(images, 0),
