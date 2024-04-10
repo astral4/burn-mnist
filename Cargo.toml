@@ -12,7 +12,6 @@ publish = false
 [dependencies]
 anyhow = "1.0.81"
 burn = { version = "0.12.1", features = ["train", "wgpu"] }
-tap = "1.0.1"
 
 [lints.rust]
 future_incompatible = "warn"

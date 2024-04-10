@@ -1,11 +1,10 @@
 use crate::{IMAGE_HEIGHT, IMAGE_WIDTH};
-use anyhow::Result;
+use anyhow::{Context, Result};
 use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
     tensor::{backend::Backend, Data, ElementConversion, Int, Shape, Tensor},
 };
 use std::{fs::read, iter::zip, path::Path};
-use tap::Pipe;
 
 #[derive(Debug)]
 pub struct MnistDataset {
@@ -17,11 +16,17 @@ impl MnistDataset {
         images_path: P1,
         labels_path: P2,
     ) -> Result<Self> {
-        let images_buf = read(images_path)?;
-        let num_images = <[u8; 4]>::try_from(&images_buf[4..7])?.pipe(u32::from_be_bytes);
+        let images_buf = read(images_path).context("Failed to read image dataset")?;
+        let num_images = {
+            let bytes: [u8; 4] = images_buf[4..7].try_into().unwrap();
+            u32::from_be_bytes(bytes)
+        };
 
-        let mut labels_buf = read(labels_path)?;
-        let num_labels = <[u8; 4]>::try_from(&labels_buf[4..7])?.pipe(u32::from_be_bytes);
+        let mut labels_buf = read(labels_path).context("Failed to read label dataset")?;
+        let num_labels = {
+            let bytes: [u8; 4] = labels_buf[4..7].try_into().unwrap();
+            u32::from_be_bytes(bytes)
+        };
 
         assert_eq!(
             num_images, num_labels,
