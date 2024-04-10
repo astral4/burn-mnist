@@ -1,8 +1,8 @@
 use anyhow::Result;
-use burn::data::dataloader::batcher::Batcher;
-use burn::data::dataset::Dataset;
-use burn::tensor::backend::Backend;
-use burn::tensor::{Data, ElementConversion, Int, Shape, Tensor};
+use burn::{
+    data::{dataloader::batcher::Batcher, dataset::Dataset},
+    tensor::{backend::Backend, Data, ElementConversion, Int, Shape, Tensor},
+};
 use std::{fs::read, iter::zip, path::Path};
 use tap::Pipe;
 
