@@ -107,7 +107,7 @@ impl<B: Backend> Batcher<MnistItem, MnistBatch<B>> for MnistBatcher<B> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MnistBatch<B: Backend> {
     pub images: Tensor<B, 3>,
     pub labels: Tensor<B, 1, Int>,
