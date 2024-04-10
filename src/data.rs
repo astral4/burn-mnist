@@ -1,6 +1,7 @@
 use anyhow::Result;
 use burn::data::dataset::Dataset;
-use burn::tensor::{backend::Backend, Data, ElementConversion, Shape, Tensor};
+use burn::tensor::backend::Backend;
+use burn::tensor::{Data, ElementConversion, Int, Shape, Tensor};
 use std::{fs::read, iter::zip, path::Path};
 use tap::Pipe;
 
@@ -35,7 +36,8 @@ impl<B: Backend> MnistDataset<B> {
             images_buf[16..].chunks_exact(IMAGE_WIDTH * IMAGE_HEIGHT),
             labels_buf.drain(8..),
         ) {
-            let tensor_data = Data {
+            // convert image to tensor
+            let image_data = Data {
                 // convert pixel values to f32
                 value: image
                     .iter()
@@ -46,18 +48,24 @@ impl<B: Backend> MnistDataset<B> {
                     dims: [1, IMAGE_WIDTH, IMAGE_HEIGHT],
                 },
             };
+            let mut image_tensor = Tensor::from_data(image_data, device);
 
-            let mut tensor = Tensor::<B, 3>::from_data(tensor_data, device);
-
-            // Normalizes pixel values so that every pixel is in the range [0, 1]
+            // We normalize pixel values so that every pixel is in the range [0, 1]
             // and, across the entire dataset, the mean is 0 and the std dev is 1.
             // According to the PyTorch MNIST example[1], after converting to the range, the mean is 0.1307 and the std dev is 0.3081.
             // [1]: https://github.com/pytorch/examples/blob/7df10c2a8606d26a251f322b62c6c4de501b6519/mnist/main.py#L122
-            tensor = ((tensor / 255) - 0.1307) / 0.3081;
+            image_tensor = ((image_tensor / 255) - 0.1307) / 0.3081;
+
+            // convert label to tensor
+            let label_data = Data {
+                value: vec![i16::from(label).elem()],
+                shape: Shape { dims: [1] },
+            };
+            let label_tensor = Tensor::from_data(label_data, device);
 
             dataset.push(MnistItem {
-                image: tensor,
-                label: i32::from(label),
+                image: image_tensor,
+                label: label_tensor,
             });
         }
 
@@ -78,5 +86,5 @@ impl<B: Backend> Dataset<MnistItem<B>> for MnistDataset<B> {
 #[derive(Clone, Debug)]
 pub struct MnistItem<B: Backend> {
     image: Tensor<B, 3>,
-    label: i32,
+    label: Tensor<B, 1, Int>,
 }
