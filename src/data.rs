@@ -1,3 +1,4 @@
+use crate::{IMAGE_HEIGHT, IMAGE_WIDTH};
 use anyhow::Result;
 use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
@@ -5,9 +6,6 @@ use burn::{
 };
 use std::{fs::read, iter::zip, path::Path};
 use tap::Pipe;
-
-const IMAGE_WIDTH: usize = 28;
-const IMAGE_HEIGHT: usize = 28;
 
 #[derive(Debug)]
 pub struct MnistDataset {

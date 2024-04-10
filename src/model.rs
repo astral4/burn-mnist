@@ -1,3 +1,4 @@
+use crate::{IMAGE_HEIGHT, IMAGE_WIDTH};
 use burn::{
     config::Config,
     module::Module,
@@ -44,27 +45,22 @@ impl ModelConfig {
 }
 
 impl<B: Backend> Model<B> {
-    /// # Shapes
-    ///   - Images [batch_size, height, width]
-    ///   - Output [batch_size, num_classes]
+    // input: (batch size) * (image width) * (image height)
+    // output: (batch size) * (# of classes)
     pub fn forward(&self, images: Tensor<B, 3>) -> Tensor<B, 2> {
-        let [batch_size, height, width] = images.dims();
+        let batch_size = images.dims()[0];
 
-        // Create a channel at the second dimension.
-        let x = images.reshape([batch_size, 1, height, width]);
-
-        let x = self.conv1.forward(x); // [batch_size, 8, _, _]
+        let x = images.reshape([batch_size, 1, IMAGE_WIDTH, IMAGE_HEIGHT]); // create channel at dimension 2
+        let x = self.conv1.forward(x); // (batch size) * 8 * (image width) * (image height)
         let x = self.dropout.forward(x);
-        let x = self.conv2.forward(x); // [batch_size, 16, _, _]
+        let x = self.conv2.forward(x); // (batch size) * 16 * (image width) * (image height)
         let x = self.dropout.forward(x);
         let x = self.activation.forward(x);
-
-        let x = self.pool.forward(x); // [batch_size, 16, 8, 8]
+        let x = self.pool.forward(x); // (batch size) * 16 * 8 * 8
         let x = x.reshape([batch_size, 16 * 8 * 8]);
-        let x = self.linear1.forward(x);
+        let x = self.linear1.forward(x); // (batch size) * (hidden layer size)
         let x = self.dropout.forward(x);
         let x = self.activation.forward(x);
-
-        self.linear2.forward(x) // [batch_size, num_classes]
+        self.linear2.forward(x) // (batch size) * (# of classes)
     }
 }
