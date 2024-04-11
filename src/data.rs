@@ -83,6 +83,13 @@ pub struct MnistItem {
     label: i16,
 }
 
+impl MnistItem {
+    #[must_use]
+    pub fn label(&self) -> i16 {
+        self.label
+    }
+}
+
 #[derive(Debug)]
 pub(crate) struct MnistBatcher<B: Backend> {
     device: B::Device,
