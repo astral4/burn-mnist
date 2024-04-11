@@ -23,18 +23,18 @@ use std::{
 
 #[derive(Config)]
 pub struct TrainingConfig {
-    pub model: ModelConfig,
-    pub optimizer: AdamWConfig,
+    pub(crate) model: ModelConfig,
+    pub(crate) optimizer: AdamWConfig,
     #[config(default = 10)]
-    pub num_epochs: usize,
+    pub(crate) num_epochs: usize,
     #[config(default = 64)]
-    pub batch_size: usize,
+    pub(crate) batch_size: usize,
     #[config(default = 4)]
-    pub num_workers: usize,
+    pub(crate) num_workers: usize,
     #[config(default = 42)]
-    pub seed: u64,
+    pub(crate) seed: u64,
     #[config(default = 1.0e-4)]
-    pub learning_rate: f64,
+    pub(crate) learning_rate: f64,
 }
 
 impl Debug for TrainingConfig {

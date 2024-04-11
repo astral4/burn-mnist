@@ -16,7 +16,7 @@ use burn::{
 };
 
 #[derive(Module, Debug)]
-pub struct Model<B: Backend> {
+pub(crate) struct Model<B: Backend> {
     conv1: Conv2d<B>,
     conv2: Conv2d<B>,
     pool: AdaptiveAvgPool2d,
@@ -36,7 +36,7 @@ pub struct ModelConfig {
 
 impl ModelConfig {
     // returns the initialized model
-    pub fn init<B: Backend>(&self, device: &B::Device) -> Model<B> {
+    pub(crate) fn init<B: Backend>(&self, device: &B::Device) -> Model<B> {
         Model {
             conv1: Conv2dConfig::new([1, 8], [3, 3]).init(device),
             conv2: Conv2dConfig::new([8, 16], [3, 3]).init(device),
@@ -49,7 +49,7 @@ impl ModelConfig {
     }
 
     // returns the initialized model using the recorded weights
-    pub fn init_with<B: Backend>(&self, record: ModelRecord<B>) -> Model<B> {
+    pub(crate) fn init_with<B: Backend>(&self, record: ModelRecord<B>) -> Model<B> {
         Model {
             conv1: Conv2dConfig::new([1, 8], [3, 3]).init_with(record.conv1),
             conv2: Conv2dConfig::new([8, 16], [3, 3]).init_with(record.conv2),
@@ -66,7 +66,7 @@ impl ModelConfig {
 impl<B: Backend> Model<B> {
     // input: (batch size) * (image width) * (image height)
     // output: (batch size) * (# of classes)
-    pub fn forward(&self, images: Tensor<B, 3>) -> Tensor<B, 2> {
+    pub(crate) fn forward(&self, images: Tensor<B, 3>) -> Tensor<B, 2> {
         let batch_size = images.dims()[0];
 
         let x = images.reshape([batch_size, 1, IMAGE_WIDTH, IMAGE_HEIGHT]); // create channel at dimension 2
@@ -83,7 +83,7 @@ impl<B: Backend> Model<B> {
         self.linear2.forward(x) // (batch size) * (# of classes)
     }
 
-    pub fn forward_classification(
+    pub(crate) fn forward_classification(
         &self,
         images: Tensor<B, 3>,
         labels: Tensor<B, 1, Int>,

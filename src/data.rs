@@ -84,12 +84,12 @@ pub struct MnistItem {
 }
 
 #[derive(Debug)]
-pub struct MnistBatcher<B: Backend> {
+pub(crate) struct MnistBatcher<B: Backend> {
     device: B::Device,
 }
 
 impl<B: Backend> MnistBatcher<B> {
-    pub fn new(device: B::Device) -> Self {
+    pub(crate) fn new(device: B::Device) -> Self {
         Self { device }
     }
 }
@@ -121,7 +121,7 @@ impl<B: Backend> Batcher<MnistItem, MnistBatch<B>> for MnistBatcher<B> {
 }
 
 #[derive(Clone, Debug)]
-pub struct MnistBatch<B: Backend> {
-    pub images: Tensor<B, 3>,
-    pub labels: Tensor<B, 1, Int>,
+pub(crate) struct MnistBatch<B: Backend> {
+    pub(crate) images: Tensor<B, 3>,
+    pub(crate) labels: Tensor<B, 1, Int>,
 }
