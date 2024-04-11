@@ -38,3 +38,9 @@ unused_results = "deny"
 [lints.clippy]
 pedantic = "warn"
 module_name_repetitions = "allow"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+strip = true
