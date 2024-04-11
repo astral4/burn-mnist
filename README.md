@@ -2,6 +2,8 @@
 
 This is a small project showcasing some features of [Burn](https://burn.dev/), a deep learning framework for the Rust programming language. The task is to classify digits using the popular MNIST dataset.
 
+Training data was sourced from a mirror of the original MNIST dataset and is accessible [here](https://github.com/cvdfoundation/mnist).
+
 ## License
 
 Licensed under either of
