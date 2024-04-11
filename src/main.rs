@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
 use burn::{
     backend::{
-        wgpu::{AutoGraphicsApi, WgpuDevice},
-        Autodiff, Wgpu,
+        wgpu::{AutoGraphicsApi, Wgpu, WgpuDevice},
+        Autodiff,
     },
     optim::AdamWConfig,
 };
@@ -27,7 +27,7 @@ fn main() -> Result<()> {
     )
     .context("Failed to load validation dataset")?;
 
-    let device = WgpuDevice::default();
+    let device = WgpuDevice::BestAvailable;
 
     train::<_, Backend>(
         "./model",
