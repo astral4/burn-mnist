@@ -6,7 +6,7 @@ use burn::{
         conv::{Conv2d, Conv2dConfig},
         loss::CrossEntropyLoss,
         pool::{AdaptiveAvgPool2d, AdaptiveAvgPool2dConfig},
-        Dropout, DropoutConfig, Linear, LinearConfig, GELU,
+        Dropout, DropoutConfig, Gelu, Linear, LinearConfig,
     },
     tensor::{
         backend::{AutodiffBackend, Backend},
@@ -23,7 +23,7 @@ pub(crate) struct Model<B: Backend> {
     dropout: Dropout,
     linear1: Linear<B>,
     linear2: Linear<B>,
-    activation: GELU,
+    activation: Gelu,
 }
 
 #[derive(Config, Debug)]
@@ -41,23 +41,9 @@ impl ModelConfig {
             conv1: Conv2dConfig::new([1, 8], [3, 3]).init(device),
             conv2: Conv2dConfig::new([8, 16], [3, 3]).init(device),
             pool: AdaptiveAvgPool2dConfig::new([8, 8]).init(),
-            activation: GELU::new(),
+            activation: Gelu::new(),
             linear1: LinearConfig::new(16 * 8 * 8, self.hidden_size).init(device),
             linear2: LinearConfig::new(self.hidden_size, self.num_classes).init(device),
-            dropout: DropoutConfig::new(self.dropout).init(),
-        }
-    }
-
-    // returns the initialized model using the recorded weights
-    pub(crate) fn init_with<B: Backend>(&self, record: ModelRecord<B>) -> Model<B> {
-        Model {
-            conv1: Conv2dConfig::new([1, 8], [3, 3]).init_with(record.conv1),
-            conv2: Conv2dConfig::new([8, 16], [3, 3]).init_with(record.conv2),
-            pool: AdaptiveAvgPool2dConfig::new([8, 8]).init(),
-            activation: GELU::new(),
-            linear1: LinearConfig::new(16 * 8 * 8, self.hidden_size).init_with(record.linear1),
-            linear2: LinearConfig::new(self.hidden_size, self.num_classes)
-                .init_with(record.linear2),
             dropout: DropoutConfig::new(self.dropout).init(),
         }
     }

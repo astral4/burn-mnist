@@ -5,7 +5,8 @@ use crate::{
 };
 use anyhow::{Context, Result};
 use burn::{
-    config::Config, data::dataloader::batcher::Batcher, record::Recorder, tensor::backend::Backend,
+    config::Config, data::dataloader::batcher::Batcher, module::Module, record::Recorder,
+    tensor::backend::Backend,
 };
 use std::path::Path;
 
@@ -28,7 +29,7 @@ pub fn infer<P: AsRef<Path>, B: Backend>(
         .load(artifact_dir.join("model"), &device)
         .context("Failed to load trained model")?;
 
-    let model = config.model.init_with::<B>(record);
+    let model = config.model.init::<B>(&device).load_record(record);
 
     let batcher = MnistBatcher::new(device);
     let batch = batcher.batch(vec![item]);

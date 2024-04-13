@@ -90,7 +90,7 @@ impl MnistItem {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub(crate) struct MnistBatcher<B: Backend> {
     device: B::Device,
 }
