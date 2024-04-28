@@ -46,7 +46,7 @@ fn main() -> Result<()> {
 
     let item = test_dataset.get(42).unwrap();
     let prediction = infer::<_, Backend>("./model", device, item.clone())?;
-    println!("Prediction: {prediction}; Actual: {}", item.label);
+    println!("Prediction: {prediction}; Actual: {}", item.label());
     */
 
     Ok(())
