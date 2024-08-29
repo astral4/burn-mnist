@@ -87,7 +87,7 @@ pub fn train<P: AsRef<Path>, B: AutodiffBackend>(
         .num_workers(config.num_workers)
         .build(test_dataset);
 
-    let learner = LearnerBuilder::new(&artifact_dir.to_string_lossy())
+    let learner = LearnerBuilder::new(artifact_dir)
         .metric_train_numeric(AccuracyMetric::new())
         .metric_valid_numeric(AccuracyMetric::new())
         .metric_train_numeric(LossMetric::new())

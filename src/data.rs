@@ -2,7 +2,7 @@ use crate::{IMAGE_HEIGHT, IMAGE_WIDTH};
 use anyhow::{anyhow, Context, Result};
 use burn::{
     data::{dataloader::batcher::Batcher, dataset::Dataset},
-    tensor::{backend::Backend, Data, ElementConversion, Int, Shape, Tensor},
+    tensor::{backend::Backend, Int, Tensor, TensorData},
 };
 use std::{fs::read, iter::zip, path::Path};
 
@@ -106,7 +106,7 @@ impl<B: Backend> Batcher<MnistItem, MnistBatch<B>> for MnistBatcher<B> {
         let labels = items
             .iter()
             .map(|item| item.label)
-            .map(|label| Tensor::from_ints([label.elem()], &self.device))
+            .map(|label| Tensor::from_ints([label], &self.device))
             .collect();
 
         let images = items
@@ -114,7 +114,7 @@ impl<B: Backend> Batcher<MnistItem, MnistBatch<B>> for MnistBatcher<B> {
             .map(|item| item.image)
             .map(|image| {
                 Tensor::from_data(
-                    Data::new(image, Shape::new([1, IMAGE_WIDTH, IMAGE_HEIGHT])).convert(),
+                    TensorData::new(image, [1, IMAGE_WIDTH, IMAGE_HEIGHT]),
                     &self.device,
                 )
             })
