@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use burn::{
     backend::{
-        wgpu::{AutoGraphicsApi, Wgpu, WgpuDevice},
+        wgpu::{Wgpu, WgpuDevice},
         Autodiff,
     },
     optim::AdamWConfig,
@@ -12,7 +12,7 @@ use burn_mnist::{
     train::{train, TrainingConfig},
 };
 
-type Backend = Autodiff<Wgpu<AutoGraphicsApi, f32, i32>>;
+type Backend = Autodiff<Wgpu>;
 
 fn main() -> Result<()> {
     let train_dataset = MnistDataset::from_idx_files(

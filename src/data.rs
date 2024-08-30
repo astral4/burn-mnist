@@ -59,7 +59,7 @@ impl MnistDataset {
 
             dataset.push(MnistItem {
                 image: image_data,
-                label: i16::from(label),
+                label,
             });
         }
 
@@ -80,12 +80,12 @@ impl Dataset<MnistItem> for MnistDataset {
 #[derive(Clone, Debug)]
 pub struct MnistItem {
     image: Vec<f32>,
-    label: i16,
+    label: u8,
 }
 
 impl MnistItem {
     #[must_use]
-    pub fn label(&self) -> i16 {
+    pub fn label(&self) -> u8 {
         self.label
     }
 }
