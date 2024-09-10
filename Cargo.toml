@@ -10,7 +10,7 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [dependencies]
-anyhow = "1.0.86"
+anyhow = "1.0.87"
 burn = { version = "0.14.0", features = ["train", "wgpu"] }
 
 [lints.rust]
