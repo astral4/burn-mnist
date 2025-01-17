@@ -27,7 +27,7 @@ fn main() -> Result<()> {
     )
     .context("Failed to load validation dataset")?;
 
-    let device = WgpuDevice::BestAvailable;
+    let device = WgpuDevice::DefaultDevice;
 
     train::<_, Backend>(
         "./model",

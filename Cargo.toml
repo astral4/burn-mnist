@@ -10,8 +10,8 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [dependencies]
-anyhow = "1.0.92"
-burn = { version = "0.15.0", features = ["train", "wgpu"] }
+anyhow = "1.0.95"
+burn = { version = "0.16.0", features = ["train", "wgpu"] }
 
 [lints.rust]
 async_fn_in_trait = "allow"
@@ -20,7 +20,6 @@ let_underscore_drop = "deny"
 macro_use_extern_crate = "deny"
 meta_variable_misuse = "deny"
 missing_abi = "deny"
-missing_copy_implementations = "warn"
 missing_debug_implementations = "warn"
 non_ascii_idents = "forbid"
 non_local_definitions = "warn"
