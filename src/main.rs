@@ -30,7 +30,7 @@ fn main() -> Result<()> {
     let device = WgpuDevice::DefaultDevice;
 
     train::<_, Backend>(
-        "./model2/",
+        "model/",
         &TrainingConfig::new(ModelConfig::new(10, 512), AdamWConfig::new()),
         &device,
         train_dataset,
