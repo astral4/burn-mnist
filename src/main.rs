@@ -45,7 +45,7 @@ fn main() -> Result<()> {
     use burn_mnist::infer::infer;
 
     let item = test_dataset.get(42).unwrap();
-    let prediction = infer::<_, Backend>("./model", device, item.clone())?;
+    let prediction = infer::<_, Backend>("./model", &device, item.clone())?;
     println!("Prediction: {prediction}; Actual: {}", item.label());
     */
 

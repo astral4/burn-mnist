@@ -73,15 +73,13 @@ pub fn train<P: AsRef<Path>, B: AutodiffBackend>(
 
     B::seed(config.seed);
 
-    let batcher_train = MnistBatcher::<B>::new(device.clone());
-    let dataloader_train = DataLoaderBuilder::new(batcher_train)
+    let dataloader_train = DataLoaderBuilder::<B, _, _>::new(MnistBatcher)
         .batch_size(config.batch_size)
         .shuffle(config.seed)
         .num_workers(config.num_workers)
         .build(train_dataset);
 
-    let batcher_test = MnistBatcher::<B::InnerBackend>::new(device.clone());
-    let dataloader_test = DataLoaderBuilder::new(batcher_test)
+    let dataloader_test = DataLoaderBuilder::new(MnistBatcher)
         .batch_size(config.batch_size)
         .shuffle(config.seed)
         .num_workers(config.num_workers)

@@ -17,7 +17,7 @@ use std::path::Path;
 /// - The trained model cannot be loaded
 pub fn infer<P: AsRef<Path>, B: Backend>(
     artifact_dir: P,
-    device: B::Device,
+    device: &B::Device,
     item: MnistItem,
 ) -> Result<B::IntElem> {
     let artifact_dir = artifact_dir.as_ref();
@@ -26,13 +26,12 @@ pub fn infer<P: AsRef<Path>, B: Backend>(
         .context("Failed to load training config file")?;
 
     let record = ModelRecorder::new()
-        .load(artifact_dir.join("model"), &device)
+        .load(artifact_dir.join("model"), device)
         .context("Failed to load trained model")?;
 
-    let model = config.model.init::<B>(&device).load_record(record);
+    let model = config.model.init::<B>(device).load_record(record);
 
-    let batcher = MnistBatcher::new(device);
-    let batch = batcher.batch(vec![item]);
+    let batch = MnistBatcher.batch(vec![item], device);
     let output = model.forward(batch.images);
     let prediction = output.argmax(1).flatten::<1>(0, 1).into_scalar();
 

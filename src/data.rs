@@ -90,23 +90,14 @@ impl MnistItem {
     }
 }
 
-#[derive(Clone, Debug)]
-pub(crate) struct MnistBatcher<B: Backend> {
-    device: B::Device,
-}
+pub(crate) struct MnistBatcher;
 
-impl<B: Backend> MnistBatcher<B> {
-    pub(crate) fn new(device: B::Device) -> Self {
-        Self { device }
-    }
-}
-
-impl<B: Backend> Batcher<MnistItem, MnistBatch<B>> for MnistBatcher<B> {
-    fn batch(&self, items: Vec<MnistItem>) -> MnistBatch<B> {
+impl<B: Backend> Batcher<B, MnistItem, MnistBatch<B>> for MnistBatcher {
+    fn batch(&self, items: Vec<MnistItem>, device: &B::Device) -> MnistBatch<B> {
         let labels = items
             .iter()
             .map(|item| item.label)
-            .map(|label| Tensor::from_ints([label], &self.device))
+            .map(|label| Tensor::from_ints([label], device))
             .collect();
 
         let images = items
@@ -115,7 +106,7 @@ impl<B: Backend> Batcher<MnistItem, MnistBatch<B>> for MnistBatcher<B> {
             .map(|image| {
                 Tensor::from_data(
                     TensorData::new(image, [1, IMAGE_WIDTH, IMAGE_HEIGHT]),
-                    &self.device,
+                    device,
                 )
             })
             .collect();
